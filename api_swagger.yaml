@@ -1,0 +1,1065 @@
+openapi: 3.0.2
+info:
+  title: Чайковский API
+  version: 0.4.0
+paths:
+  /v1/stories:
+    get:
+      tags:
+        - Истории
+      summary: Получение списка историй
+      operationId: get_stories_v1_stories_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__stories__usecases__get_list__Output
+  /v1/content:
+    get:
+      tags:
+        - Контент
+      summary: Получение контента
+      operationId: get_content_v1_content_get
+      parameters:
+        - required: true
+          schema:
+            $ref: '#/components/schemas/Category'
+          name: category
+          in: query
+        - required: false
+          schema:
+            title: Refresh
+            type: boolean
+            default: false
+          name: refresh
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__content__usecases__get_list__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    head:
+      tags:
+        - Контент
+      summary: Получение метаданных контента
+      operationId: get_content_metadata_v1_content_head
+      parameters:
+        - required: true
+          schema:
+            $ref: '#/components/schemas/Category'
+          name: category
+          in: query
+      responses:
+        '204':
+          description: Successful Response
+          headers:
+            Last-Modified:
+              description: Дата и время последнего обновления содержимого
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/podcasts/{podcast_id}':
+    get:
+      tags:
+        - Подкасты
+      summary: Получение деталей подкаста
+      operationId: get_details_v1_podcasts__podcast_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Podcast Id
+            type: string
+            format: uuid
+          name: podcast_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__podcasts__usecases__details__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/podcasts/{podcast_id}/tracks':
+    get:
+      tags:
+        - Подкасты
+      summary: Получение треков подкаста
+      operationId: get_podcast_tracks_v1_podcasts__podcast_id__tracks_get
+      parameters:
+        - required: true
+          schema:
+            title: Podcast Id
+            type: string
+            format: uuid
+          name: podcast_id
+          in: path
+        - required: false
+          schema:
+            title: Cursor
+            type: string
+          name: cursor
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__podcasts__usecases__get_tracks__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/podcasts/{podcast_id}/suggestions':
+    get:
+      tags:
+        - Подкасты
+      summary: Получение рекомендаций
+      operationId: get_podcast_suggestions_v1_podcasts__podcast_id__suggestions_get
+      parameters:
+        - required: true
+          schema:
+            title: Podcast Id
+            type: string
+            format: uuid
+          name: podcast_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__podcasts__usecases__get_suggestions__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/compilations/{compilation_id}':
+    get:
+      tags:
+        - Подборки
+      summary: Получение деталей подборки
+      operationId: get_details_v1_compilations__compilation_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Compilation Id
+            type: string
+            format: uuid
+          name: compilation_id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__compilations__usecases__details__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/compilations/{compilation_id}/tracks':
+    get:
+      tags:
+        - Подборки
+      summary: Получение треков подборки
+      operationId: get_complication_tracks_v1_compilations__compilation_id__tracks_get
+      parameters:
+        - required: true
+          schema:
+            title: Compilation Id
+            type: string
+            format: uuid
+          name: compilation_id
+          in: path
+        - required: false
+          schema:
+            title: Cursor
+            type: string
+          name: cursor
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__compilations__usecases__get_tracks__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/social/get-info:
+    post:
+      tags:
+        - Социальные данные
+      summary: Получение информации об объектах
+      operationId: get_social_info_v1_social_get_info_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/domain__social__usecases__get_info__Input'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__social__usecases__get_info__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/social/{object_id}/like':
+    post:
+      tags:
+        - Социальные данные
+      summary: Добавление объекта в понравившиеся
+      operationId: add_object_like_v1_social__object_id__like_post
+      parameters:
+        - required: true
+          schema:
+            title: Object Id
+            type: string
+            format: uuid
+          name: object_id
+          in: path
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - Социальные данные
+      summary: Удаление объекта из понравившихся
+      operationId: remove_object_like_v1_social__object_id__like_delete
+      parameters:
+        - required: true
+          schema:
+            title: Object Id
+            type: string
+            format: uuid
+          name: object_id
+          in: path
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/v1/social/{object_id}/comments':
+    get:
+      tags:
+        - Социальные данные
+      summary: Получение комментариев объекта
+      operationId: get_social_comments_v1_social__object_id__comments_get
+      parameters:
+        - required: true
+          schema:
+            title: Object Id
+            type: string
+            format: uuid
+          name: object_id
+          in: path
+        - required: false
+          schema:
+            title: Cursor
+            type: string
+          name: cursor
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/domain__social__usecases__get_comments__Output
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/events:
+    post:
+      tags:
+        - События
+      summary: Создание события
+      operationId: get_content_v1_events_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/domain__events__usecases__create_event__Input
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    Block:
+      title: Block
+      required:
+        - id
+        - kind
+        - title
+        - items
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        kind:
+          $ref: >-
+            #/components/schemas/domain__content__usecases__get_list__Block__Kind
+        title:
+          title: Title
+          type: string
+        description:
+          title: Description
+          type: string
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockItem'
+    BlockItem:
+      title: BlockItem
+      required:
+        - id
+        - kind
+        - title
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        kind:
+          $ref: >-
+            #/components/schemas/domain__content__usecases__get_list__BlockItem__Kind
+        title:
+          title: Title
+          type: string
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        context:
+          $ref: '#/components/schemas/BlockItemContext'
+    BlockItemContext:
+      title: BlockItemContext
+      type: object
+      properties:
+        duration:
+          title: Duration
+          type: integer
+        release_date:
+          title: Release Date
+          type: string
+          format: date
+        author:
+          $ref: '#/components/schemas/BlockItemContextAuthor'
+        media:
+          $ref: '#/components/schemas/BlockItemContextMedia'
+    BlockItemContextAuthor:
+      title: BlockItemContextAuthor
+      required:
+        - id
+        - title
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+    BlockItemContextMedia:
+      title: BlockItemContextMedia
+      required:
+        - kind
+        - url
+      type: object
+      properties:
+        kind:
+          $ref: >-
+            #/components/schemas/domain__content__usecases__get_list__BlockItemContextMedia__Kind
+        url:
+          title: Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    Category:
+      title: Category
+      enum:
+        - main
+        - music
+        - podcasts_books
+        - radio
+        - recommended_playlist
+      type: string
+      description: An enumeration.
+    Comment:
+      title: Comment
+      required:
+        - id
+        - author
+        - message
+        - created_at
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        author:
+          $ref: '#/components/schemas/CommentAuthor'
+        message:
+          title: Message
+          type: string
+        created_at:
+          title: Created At
+          type: string
+          format: date-time
+    CommentAuthor:
+      title: CommentAuthor
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        name:
+          title: Name
+          type: string
+    Context:
+      title: Context
+      type: object
+      properties:
+        book_id:
+          title: Book Id
+          type: string
+          format: uuid
+        complication_id:
+          title: Complication Id
+          type: string
+          format: uuid
+        podcast_id:
+          title: Podcast Id
+          type: string
+          format: uuid
+        author_id:
+          title: Author Id
+          type: string
+          format: uuid
+        album_id:
+          title: Album Id
+          type: string
+          format: uuid
+        radio_id:
+          title: Radio Id
+          type: string
+          format: uuid
+        track_id:
+          title: Track Id
+          type: string
+          format: uuid
+        listen_duration:
+          title: Listen Duration
+          type: integer
+          example: 35
+    ControlColor:
+      title: ControlColor
+      enum:
+        - light
+        - dark
+      type: string
+      description: An enumeration.
+    EventType:
+      title: EventType
+      enum:
+        - playback_started
+        - playback_stopped
+      type: string
+      description: An enumeration.
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ObjectInfo:
+      title: ObjectInfo
+      required:
+        - id
+        - rating
+        - count_comments
+        - count_likes
+        - liked
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+          example: 2122a5c2-e443-4735-b5a1-d5b7e2f57453
+        rating:
+          title: Rating
+          type: number
+          example: 4.76
+        count_comments:
+          title: Count Comments
+          type: integer
+          example: 132
+        count_likes:
+          title: Count Likes
+          type: integer
+          example: 1362672
+        liked:
+          title: Liked
+          type: boolean
+          example: true
+    Position:
+      title: Position
+      enum:
+        - top
+        - bottom
+      type: string
+      description: An enumeration.
+    StoryFrame:
+      title: StoryFrame
+      required:
+        - image
+        - content
+      type: object
+      properties:
+        image:
+          title: Image
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        content:
+          $ref: '#/components/schemas/StoryFrameContent'
+    StoryFrameAction:
+      title: StoryFrameAction
+      required:
+        - url
+        - name
+      type: object
+      properties:
+        url:
+          title: Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        name:
+          title: Name
+          type: string
+    StoryFrameContent:
+      title: StoryFrameContent
+      required:
+        - text_color
+        - header
+        - descriptions
+        - position
+        - control_color
+        - gradient_position
+        - gradient_color
+      type: object
+      properties:
+        text_color:
+          title: Text Color
+          type: string
+        header:
+          title: Header
+          type: string
+        descriptions:
+          title: Descriptions
+          type: array
+          items:
+            type: string
+        position:
+          $ref: '#/components/schemas/Position'
+        control_color:
+          $ref: '#/components/schemas/ControlColor'
+        gradient_position:
+          $ref: '#/components/schemas/Position'
+        gradient_color:
+          title: Gradient Color
+          type: string
+        action:
+          $ref: '#/components/schemas/StoryFrameAction'
+    StoryListView:
+      title: StoryListView
+      required:
+        - id
+        - title
+        - image
+        - frames
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+        image:
+          title: Image
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        frames:
+          title: Frames
+          type: array
+          items:
+            $ref: '#/components/schemas/StoryFrame'
+    Suggestion:
+      title: Suggestion
+      required:
+        - id
+        - type
+        - title
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/Type'
+        title:
+          title: Title
+          type: string
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    TrackAuthor:
+      title: TrackAuthor
+      required:
+        - id
+        - title
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+    Type:
+      title: Type
+      enum:
+        - book
+        - complication
+        - podcast
+        - author
+        - album
+        - radio
+        - track
+      type: string
+      description: An enumeration.
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            type: string
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+    domain__compilations__usecases__details__Output:
+      title: Output
+      required:
+        - id
+        - title
+        - description
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+        description:
+          title: Description
+          type: string
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    domain__compilations__usecases__get_tracks__Output:
+      title: Output
+      required:
+        - tracks
+      type: object
+      properties:
+        tracks:
+          title: Tracks
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/domain__compilations__usecases__get_tracks__Track
+        cursor_next:
+          title: Cursor Next
+          type: string
+    domain__compilations__usecases__get_tracks__Track:
+      title: Track
+      required:
+        - id
+        - title
+        - duration
+        - author
+        - media
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+        duration:
+          title: Duration
+          type: integer
+          example: 323
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        last_listen_duration:
+          title: Last Listen Duration
+          type: integer
+          example: 30
+        author:
+          $ref: '#/components/schemas/TrackAuthor'
+        media:
+          $ref: >-
+            #/components/schemas/domain__compilations__usecases__get_tracks__TrackMedia
+    domain__compilations__usecases__get_tracks__TrackMedia:
+      title: TrackMedia
+      required:
+        - kind
+        - url
+      type: object
+      properties:
+        kind:
+          $ref: >-
+            #/components/schemas/domain__compilations__usecases__get_tracks__TrackMedia__Kind
+        url:
+          title: Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    domain__compilations__usecases__get_tracks__TrackMedia__Kind:
+      title: Kind
+      enum:
+        - audio
+      type: string
+      description: An enumeration.
+    domain__content__usecases__get_list__BlockItemContextMedia__Kind:
+      title: Kind
+      enum:
+        - audio
+      type: string
+      description: An enumeration.
+    domain__content__usecases__get_list__BlockItem__Kind:
+      title: Kind
+      enum:
+        - track
+        - podcast
+        - book
+        - album
+        - compilation
+        - radio
+      type: string
+      description: An enumeration.
+    domain__content__usecases__get_list__Block__Kind:
+      title: Kind
+      enum:
+        - list
+        - banner
+        - compilation
+        - categories
+      type: string
+      description: An enumeration.
+    domain__content__usecases__get_list__Output:
+      title: Output
+      required:
+        - blocks
+      type: object
+      properties:
+        blocks:
+          title: Blocks
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+    domain__events__usecases__create_event__Input:
+      title: Input
+      required:
+        - type
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/EventType'
+        context:
+          $ref: '#/components/schemas/Context'
+    domain__podcasts__usecases__details__Output:
+      title: Output
+      required:
+        - id
+        - title
+        - description
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+        description:
+          title: Description
+          type: string
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    domain__podcasts__usecases__get_suggestions__Output:
+      title: Output
+      required:
+        - suggestions
+      type: object
+      properties:
+        suggestions:
+          title: Suggestions
+          type: array
+          items:
+            $ref: '#/components/schemas/Suggestion'
+    domain__podcasts__usecases__get_tracks__Output:
+      title: Output
+      required:
+        - tracks
+      type: object
+      properties:
+        tracks:
+          title: Tracks
+          type: array
+          items:
+            $ref: '#/components/schemas/domain__podcasts__usecases__get_tracks__Track'
+        cursor_next:
+          title: Cursor Next
+          type: string
+    domain__podcasts__usecases__get_tracks__Track:
+      title: Track
+      required:
+        - id
+        - title
+        - release_date
+        - duration
+        - media
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        title:
+          title: Title
+          type: string
+        release_date:
+          title: Release Date
+          type: string
+          format: date
+        duration:
+          title: Duration
+          type: integer
+          example: 623
+        image_url:
+          title: Image Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+        last_listen_duration:
+          title: Last Listen Duration
+          type: integer
+          example: 30
+        media:
+          $ref: >-
+            #/components/schemas/domain__podcasts__usecases__get_tracks__TrackMedia
+    domain__podcasts__usecases__get_tracks__TrackMedia:
+      title: TrackMedia
+      required:
+        - kind
+        - url
+      type: object
+      properties:
+        kind:
+          $ref: >-
+            #/components/schemas/domain__podcasts__usecases__get_tracks__TrackMedia__Kind
+        url:
+          title: Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          format: uri
+    domain__podcasts__usecases__get_tracks__TrackMedia__Kind:
+      title: Kind
+      enum:
+        - audio
+      type: string
+      description: An enumeration.
+    domain__social__usecases__get_comments__Output:
+      title: Output
+      required:
+        - comments
+      type: object
+      properties:
+        comments:
+          title: Comments
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        cursor_next:
+          title: Cursor Next
+          type: string
+    domain__social__usecases__get_info__Input:
+      title: Input
+      required:
+        - object_ids
+      type: object
+      properties:
+        object_ids:
+          title: Object Ids
+          maxLength: 100
+          minLength: 1
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          example:
+            - 2122a5c2-e443-4735-b5a1-d5b7e2f57453
+    domain__social__usecases__get_info__Output:
+      title: Output
+      required:
+        - objects
+      type: object
+      properties:
+        objects:
+          title: Objects
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectInfo'
+    domain__stories__usecases__get_list__Output:
+      title: Output
+      required:
+        - stories
+      type: object
+      properties:
+        stories:
+          title: Stories
+          type: array
+          items:
+            $ref: '#/components/schemas/StoryListView'
