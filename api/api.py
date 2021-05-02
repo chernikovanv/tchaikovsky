@@ -1,6 +1,10 @@
+import os
 from flask import Flask
+
+# fix to avoid this error - https://github.com/jarus/flask-testing/issues/143 
 import werkzeug
 werkzeug.cached_property = werkzeug.utils.cached_property
+
 from flask_restplus import Resource, Api
 
 app = Flask(__name__)                  #  Create a Flask WSGI application
