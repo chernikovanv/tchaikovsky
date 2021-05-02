@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, url_for
 
 # fix to avoid this error - https://github.com/jarus/flask-testing/issues/143 
 import werkzeug
