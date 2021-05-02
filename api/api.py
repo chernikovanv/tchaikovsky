@@ -1,4 +1,6 @@
 from flask import Flask
+import werkzeug
+werkzeug.cached_property = werkzeug.utils.cached_property
 from flask_restplus import Resource, Api
 
 app = Flask(__name__)                  #  Create a Flask WSGI application
