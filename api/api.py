@@ -7,8 +7,18 @@ werkzeug.cached_property = werkzeug.utils.cached_property
 
 from flask_restplus import Resource, Api
 
+class Custom_API(Api):
+    @property
+    def specs_url(self):
+        '''
+        The Swagger specifications absolute url (ie. `swagger.json`)
+
+        :rtype: str
+        '''
+        return url_for(self.endpoint('specs'), _external=False)
+
 app = Flask(__name__)                  #  Create a Flask WSGI application
-api = Api(app)                         #  Create a Flask-RESTPlus API
+api = Custom_API(app)                  #  Create a Flask-RESTPlus API
 
 @api.route('/hello')                   #  Create a URL route to this resource
 class HelloWorld(Resource):            #  Create a RESTful resource
