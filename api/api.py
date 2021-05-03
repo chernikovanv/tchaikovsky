@@ -1,5 +1,6 @@
 import os
 from flask import Flask, url_for
+from amuze import Amuze
 
 # fix to avoid this error - https://github.com/jarus/flask-testing/issues/143 
 import werkzeug
@@ -20,10 +21,13 @@ class Custom_API(Api):
 app = Flask(__name__)                  #  Create a Flask WSGI application
 api = Custom_API(app)                  #  Create a Flask-RESTPlus API
 
-@api.route('/hello')                   #  Create a URL route to this resource
+amz = Amuze()
+
+@api.route('/feed')                   #  Create a URL route to this resource
 class HelloWorld(Resource):            #  Create a RESTful resource
     def get(self):                     #  Create GET endpoint
-        return {'hello': 'world'}
+        res = amz.feed()
+        return res
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'))
