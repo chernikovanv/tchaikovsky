@@ -295,8 +295,8 @@ class Amuze():
         r = requests.post(AMUZE_GRAPHQL_API_URL, json=params, headers=self.headers)
         
         time_elapsed = datetime.now() - start_time
-        print('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-        #logger.info('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+        #print('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+        logger.error('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
         
         if r.status_code != 200: return None
         
@@ -312,8 +312,8 @@ class Amuze():
             r = requests.post(AMUZE_GRAPHQL_API_URL, json=params, headers=self.headers)
         
             time_elapsed = datetime.now() - start_time
-            print('QUERY_SHOWCASE_BLOCK ' + str(id) + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-            #logger.info('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+            #print('QUERY_SHOWCASE_BLOCK ' + str(id) + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+            logger.error('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
                 
             if r.status_code == 200: 
                 blocks.append(r.json()['data']['showcase']['blocks']['block'])
