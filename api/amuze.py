@@ -3,6 +3,9 @@ import json
 import time
 from datetime import datetime 
 
+import logging
+logger = logging.getLogger(__name__)
+    
 TOKEN = '89012be6a4b5099e3384360459355ac7'
 
 AMUZE_GRAPHQL_API_URL = 'https://cdn.music.beeline.ru/api/v3/graphql'
@@ -293,7 +296,8 @@ class Amuze():
         
         time_elapsed = datetime.now() - start_time
         #print('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-    
+        logger.info('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+        
         if r.status_code != 200: return None
         
         items = r.json()['data']['showcase']['blocks']['dynamicContentIds']['edges']
@@ -309,7 +313,8 @@ class Amuze():
         
             time_elapsed = datetime.now() - start_time
             #print('QUERY_SHOWCASE_BLOCK ' + str(id) + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-            
+            logger.info('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+                
             if r.status_code == 200: 
                 blocks.append(r.json()['data']['showcase']['blocks']['block'])
             
