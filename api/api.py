@@ -1,5 +1,6 @@
 import os
-from flask import Flask, url_for
+from flask import Flask, url_for, request
+
 from amuze import Amuze
 
 # fix to avoid this error - https://github.com/jarus/flask-testing/issues/143 
@@ -8,6 +9,11 @@ werkzeug.cached_property = werkzeug.utils.cached_property
 
 from flask_restplus import Resource, Api
 
+from flask_restplus import reqparse
+args = reqparse.RequestParser()
+args.add_argument('id', type=str, required=False, default=None, help='uuid')
+
+# fix to run swagger behind  revers proxy
 class Custom_API(Api):
     @property
     def specs_url(self):
@@ -18,15 +24,29 @@ class Custom_API(Api):
         '''
         return url_for(self.endpoint('specs'), _external=False)
 
-app = Flask(__name__)                  #  Create a Flask WSGI application
-api = Custom_API(app)                  #  Create a Flask-RESTPlus API
+app = Flask(__name__)
+api = Custom_API(app)
 
 amz = Amuze()
 
-@api.route('/feed')                   #  Create a URL route to this resource
-class HelloWorld(Resource):            #  Create a RESTful resource
-    def get(self):                     #  Create GET endpoint
-        res = amz.feed()
+ns = api.namespace('Сервис контента', path='/')
+
+@ns.route('/feed')
+#@ns.param('id', 'uuid')
+#@ns.doc(params={'id': 'uuid'})
+@ns.expect(args)
+class feed(Resource):
+
+    def get(self):
+
+        req_args = args.parse_args(request)
+        id = req_args.get('id', None)
+
+        if id is not None:
+            res = amz.feed_by_id(id)
+        else:
+            res = amz.feed()
+
         return res
     
 if __name__ == '__main__':

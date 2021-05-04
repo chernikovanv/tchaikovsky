@@ -5,7 +5,11 @@ from datetime import datetime
 
 import logging
 logger = logging.getLogger(__name__)
-    
+
+from mapper import ID_Mapper
+
+id_mapper = ID_Mapper()
+
 TOKEN = '89012be6a4b5099e3384360459355ac7'
 
 AMUZE_GRAPHQL_API_URL = 'https://cdn.music.beeline.ru/api/v3/graphql'
@@ -229,6 +233,7 @@ class Amuze():
             item['description'] = None
             item['images'] = []
             item['items'] = []
+            item['id'] = id_mapper.ext2int('block', item['id'])
             
             item_keys = item.keys()
             
@@ -236,7 +241,8 @@ class Amuze():
                 block_items_key = 'playlists'
                 block_items_kind = 'playlist'
                 for block_item in item[block_items_key]['edges']:
-                    item['items'].append({'id':block_item['node']['id'],
+                    id = id_mapper.ext2int( block_items_kind, block_item['node']['id'])
+                    item['items'].append({'id': id,
                                           'kind': block_items_kind,
                                           'title':block_item['node']['title'],
                                           'description':block_item['node']['description'],
@@ -249,7 +255,8 @@ class Amuze():
                 block_items_key = 'tracks'
                 block_items_kind = 'track'
                 for block_item in item[block_items_key]['edges']:
-                    item['items'].append({'id':block_item['node']['id'],
+                    id = id_mapper.ext2int(block_items_kind, block_item['node']['id'])
+                    item['items'].append({'id': id,
                                           'kind': block_items_kind,
                                            'title':block_item['node']['title'],
                                            'description':None,
@@ -262,7 +269,8 @@ class Amuze():
                 block_items_key = 'artists'
                 block_items_kind = 'artist'
                 for block_item in item[block_items_key]['edges']:
-                    item['items'].append({'id':block_item['node']['id'],
+                    id = id_mapper.ext2int(block_items_kind, block_item['node']['id'])
+                    item['items'].append({'id': id,
                                           'kind': block_items_kind,
                                            'title':block_item['node']['title'],
                                            'description':None,
@@ -275,7 +283,8 @@ class Amuze():
                 block_items_key = 'releases'
                 block_items_kind = 'release'    
                 for block_item in item[block_items_key]['edges']:
-                    item['items'].append({'id':block_item['node']['id'],
+                    id = id_mapper.ext2int(block_items_kind, block_item['node']['id'])
+                    item['items'].append({'id': id,
                                           'kind': block_items_kind, 
                                            'title':block_item['node']['title'],
                                            'description':None,
@@ -287,7 +296,7 @@ class Amuze():
             item.pop(block_items_key)
             
         return blocks
-        
+
     def feed(self):
         start_time = datetime.now() 
         
@@ -313,7 +322,7 @@ class Amuze():
         
             time_elapsed = datetime.now() - start_time
             #print('QUERY_SHOWCASE_BLOCK ' + str(id) + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-            logger.error('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+            logger.error('QUERY_SHOWCASE_BLOCK' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
                 
             if r.status_code == 200: 
                 blocks.append(r.json()['data']['showcase']['blocks']['block'])
@@ -322,3 +331,9 @@ class Amuze():
         
         return {"timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
                 "blocks":self.blocks_conversion(blocks)}
+
+    def feed_by_id(self, id):
+
+        (ext_type, ext_id) = id_mapper.int2ext(id)
+
+        return {'ext_type':ext_type, 'ext_id':ext_id}
