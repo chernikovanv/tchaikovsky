@@ -131,10 +131,10 @@ clusters create "${CLUSTER_NAME}" \
 --zone "${GCP_ZONE}" \
 --cluster-version "${CLUSTER_VERSION}" \
 --node-version "${CLUSTER_VERSION}" \
---machine-type "n1-standard-32" \
+--machine-type "n1-standard-4" \
 --num-nodes "4" \
 --disk-type "pd-ssd" --disk-size "20" \
---local-ssd-count "8" \
+--local-ssd-count "5" \
 --node-taints role=scylla-clusters:NoSchedule \
 --image-type "UBUNTU_CONTAINERD" \
 --system-config-from-file=systemconfig.yaml \
@@ -148,7 +148,7 @@ node-pools create "cassandra-stress-pool" \
 --cluster "${CLUSTER_NAME}" \
 --zone "${GCP_ZONE}" \
 --node-version "${CLUSTER_VERSION}" \
---machine-type "n1-standard-32" \
+--machine-type "n1-standard-4" \
 --num-nodes "2" \
 --disk-type "pd-ssd" --disk-size "20" \
 --node-taints role=cassandra-stress:NoSchedule \
@@ -162,7 +162,7 @@ node-pools create "operator-pool" \
 --cluster "${CLUSTER_NAME}" \
 --zone "${GCP_ZONE}" \
 --node-version "${CLUSTER_VERSION}" \
---machine-type "n1-standard-8" \
+--machine-type "n1-standard-4" \
 --num-nodes "1" \
 --disk-type "pd-ssd" --disk-size "20" \
 --image-type "UBUNTU_CONTAINERD" \
