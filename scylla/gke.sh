@@ -134,7 +134,7 @@ clusters create "${CLUSTER_NAME}" \
 --machine-type "n1-standard-4" \
 --num-nodes "4" \
 --disk-type "pd-ssd" --disk-size "20" \
---local-ssd-count "5" \
+--local-ssd-count "2" \
 --node-taints role=scylla-clusters:NoSchedule \
 --image-type "UBUNTU_CONTAINERD" \
 --system-config-from-file=systemconfig.yaml \
