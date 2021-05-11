@@ -10,7 +10,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: scylla-cluster-member
+  name: simple-cluster-member
   namespace: scylla
 
 ---
@@ -19,7 +19,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: scylla-cluster-member
+  name: simple-cluster-member
   namespace: scylla
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -27,53 +27,43 @@ roleRef:
   name: scyllacluster-member
 subjects:
   - kind: ServiceAccount
-    name: scylla-cluster-member
+    name: simple-cluster-member
     namespace: scylla
 
 ---
 
-# Scylla Cluster
+# Simple Scylla Cluster
 apiVersion: scylla.scylladb.com/v1
 kind: ScyllaCluster
 metadata:
-  name: scylla-cluster
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: simple-cluster
   namespace: scylla
 spec:
   version: 4.2.0
   agentVersion: 2.2.0
-  cpuset: true
-  sysctls:
-    - "fs.aio-max-nr=2097152"
-  network:
-    hostNetworking: true
+  developerMode: true
   datacenter:
-    name: <gcp_zone>
+    name: us-east-1
     racks:
-      - name: <gcp_region>
+      - name: us-east-1a
         scyllaConfig: "scylla-config"
         scyllaAgentConfig: "scylla-agent-config"
-        members: 2
+        members: 3
         storage:
-          storageClassName: local-raid-disks
-          capacity: 2995G
+          capacity: 5Gi
         resources:
-          limits:
-            cpu: 30
-            memory: 115G
           requests:
-            cpu: 30
-            memory: 115G
-        placement:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                  - key: failure-domain.beta.kubernetes.io/zone
-                    operator: In
-                    values:
-                      - <gcp_zone>
-          tolerations:
-            - key: role
-              operator: Equal
-              value: scylla-clusters
-              effect: NoSchedule
+            cpu: 1
+            memory: 1Gi
+          limits:
+            cpu: 1
+            memory: 1Gi
+        volumes:
+          - name: coredumpfs
+            hostPath:
+              path: /tmp/coredumps
+        volumeMounts:
+          - mountPath: /tmp/coredumps
+            name: coredumpfs
