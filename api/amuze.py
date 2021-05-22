@@ -2,6 +2,8 @@ import requests
 import json
 import time
 from datetime import datetime 
+import asyncio
+import aiohttp
 
 import logging
 logger = logging.getLogger(__name__)
@@ -378,12 +380,21 @@ class Amuze():
             
         return blocks
 
+    async def request(self, URL, json, headers):
+        #id = json["variables"]["id"]
+        #print(str(id) + ', start : ' + str(datetime.now()))
+        async with aiohttp.ClientSession() as session:
+            async with session.post(URL, json=json, headers=headers) as response:
+                res = await response.json()
+        #print(str(id) + ', end : ' + str(datetime.now()))
+        return [response.status, res]
+
     def feed(self):
         start_time = datetime.now() 
         
         params = {"query":QUERY_SHOWCASE,"variables":{}}
         r = requests.post(AMUZE_GRAPHQL_API_URL, json=params, headers=self.headers)
-        
+
         time_elapsed = datetime.now() - start_time
         #print('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
         logger.error('QUERY_SHOWCASE' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
@@ -391,14 +402,28 @@ class Amuze():
         if r.status_code != 200: return None
         
         items = r.json()['data']['showcase']['blocks']['dynamicContentIds']['edges']
-        
+
+        asyncio.set_event_loop(asyncio.new_event_loop())
+
+        start_time = datetime.now()
+        tasks = [self.request(AMUZE_GRAPHQL_API_URL, {"query":QUERY_SHOWCASE_BLOCK,"variables":{"id":item['node']['id']}}, self.headers) for item in items]
+        res, _ = asyncio.run(asyncio.wait(tasks))
+        time_elapsed = datetime.now() - start_time
+        logger.error('QUERY_SHOWCASE_BLOCK ASYNC' + ', time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
+
+        blocks = [item.result()[1]['data']['showcase']['blocks']['block'] for item in res if item.result()[0] == 200]
+
+        return {"timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+               "blocks":self.blocks_conversion(blocks)}
+
+        # sequential requests
         blocks = []
         for item in items:
             id =item['node']['id']
             params = {"query":QUERY_SHOWCASE_BLOCK,"variables":{"id":id}}
             
-            start_time = datetime.now() 
-            
+            start_time = datetime.now()
+
             r = requests.post(AMUZE_GRAPHQL_API_URL, json=params, headers=self.headers)
         
             time_elapsed = datetime.now() - start_time
@@ -409,9 +434,9 @@ class Amuze():
                 blocks.append(r.json()['data']['showcase']['blocks']['block'])
             
             #break
-        
+
         return {"timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
-                "blocks":self.blocks_conversion(blocks)}
+               "blocks":self.blocks_conversion(blocks)}
 
     def feed_by_id(self, id):
 
