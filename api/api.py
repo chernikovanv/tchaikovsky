@@ -1,6 +1,5 @@
 import os
 from flask import Flask, url_for, request
-#from quart import Quart, url_for, request
 
 from amuze import Amuze
 
@@ -10,9 +9,6 @@ werkzeug.cached_property = werkzeug.utils.cached_property
 
 from flask_restplus import Resource, Api
 from flask_restplus import reqparse
-
-#from quart_restplus import Resource, Api
-#from quart_restplus import reqparse
 
 args = reqparse.RequestParser()
 args.add_argument('id', type=str, required=False, default=None, help='uuid')
@@ -29,7 +25,6 @@ class Custom_API(Api):
         return url_for(self.endpoint('specs'), _external=False)
 
 app = Flask(__name__)
-#app = Quart(__name__)
 api = Custom_API(app)
 
 amz = Amuze()
