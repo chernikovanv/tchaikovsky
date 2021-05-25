@@ -7,6 +7,10 @@ from amuze import Amuze
 import werkzeug
 werkzeug.cached_property = werkzeug.utils.cached_property
 
+# monkey patch - https://stackoverflow.com/questions/67496857/cannot-import-name-endpoint-from-view-func-from-flask-helpers-in-python
+import flask.scaffold
+flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
+
 from flask_restplus import Resource, Api
 from flask_restplus import reqparse
 
