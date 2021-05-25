@@ -1,3 +1,5 @@
 flask
 flask_restplus
 requests
+asyncio
+aiohttp
