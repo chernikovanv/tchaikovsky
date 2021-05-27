@@ -1,5 +1,6 @@
 import os
 from flask import Flask, url_for, request
+from datetime import datetime
 
 from amuze import Amuze
 
@@ -13,9 +14,6 @@ flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 
 from flask_restplus import Resource, Api
 from flask_restplus import reqparse
-
-args = reqparse.RequestParser()
-args.add_argument('id', type=str, required=False, default=None, help='uuid')
 
 # fix to run swagger behind  revers proxy
 class Custom_API(Api):
@@ -35,9 +33,17 @@ amz = Amuze()
 
 ns = api.namespace('Сервис контента', path='/')
 
-@ns.route('/feed')
-#@ns.param('id', 'uuid')
-#@ns.doc(params={'id': 'uuid'})
+args = reqparse.RequestParser()
+args.add_argument('id', type=str, required=False, default=None, help='uuid')
+args.add_argument(
+    'category',
+    type=str,
+    required=False,
+    default=None,
+    choices=['main'],
+    help='category'
+)
+@ns.route('/feed/v1')
 @ns.expect(args)
 class feed(Resource):
 
@@ -52,6 +58,42 @@ class feed(Resource):
             res = amz.feed()
 
         return res
-    
+
+    def head(self):
+        return ('',204,{'Last-Modified': datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f%z")})
+
+@ns.route('/story/v1')
+class story(Resource):
+    def get(self):
+        return {'stories':[]}
+
+ns_users = api.namespace('Сервис пользователей', path='/')
+
+args = reqparse.RequestParser()
+args.add_argument(
+    'action',
+    type=str,
+    required=False,
+    default=None,
+    choices=['initialize'],
+    help='action'
+)
+@ns_users.route('/player/v1')
+@ns_users.expect(args)
+class player(Resource):
+    def post(self):
+        player_state = {
+            "tracks": [],
+            "prev_tracks": [],
+            "options": {
+                "repeat_enabled": False,
+                "shuffle_enabled": False
+            },
+            "state": {
+                "is_playing": False
+            }
+        }
+        return player_state
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'))

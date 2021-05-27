@@ -45,6 +45,7 @@ query showcaseBlock($id: Int!, $first: Int = 20, $after: String) {
             block(id: $id) {
                 id
                 title
+                description
                 ... on showcaseBlockTracks {
                     tracks: content(first: $first, after: $after) {
                         totalCount
@@ -277,6 +278,7 @@ class Amuze():
         playlist['id'] = id_mapper.ext2int('playlist', playlist['id'])
         playlist['images']: [{'url': playlist['image']['url'], 'size': 'thumbnail'}]
         playlist.pop('image')
+        playlist['kind'] = 'playlist'
 
         items = []
 
@@ -313,7 +315,7 @@ class Amuze():
                              'highlight': None,
                              'action': None
                             }
-            item['description'] = None
+            item['description'] = item['description']
             item['images'] = []
             item['items'] = []
             item['id'] = id_mapper.ext2int('block', item['id'])
