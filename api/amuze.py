@@ -270,9 +270,98 @@ fragment track on Track {
     }
 }
 '''
+
+QUERY_PLAYLIST_WITH_STREAM_URL = '''
+query playlist($id: Int!) {
+    music {
+        playlists(ids: [$id]) {
+          id
+          title
+          description
+          image(theme: black) {
+              url
+          }
+          items {
+            totalCount
+            edges {
+                node {
+                    id
+                    track_title
+                    artist_title
+                    duration
+                    track {
+                        ...track
+                    }
+                }
+            }
+        }
+    }
+  }
+}
+
+fragment track on Track {
+    id
+    title
+    duration
+    image(theme: black) {
+        url
+    }
+    stream {
+        url
+    }
+    artist {
+        id
+        public_id
+        title
+    }
+    release {
+        id
+        public_id
+        title
+        date
+    }
+}
+'''
+
 class Amuze():
     def __init__(self):
         self.headers = {'token': TOKEN}
+
+    def player_conversion(self, player):
+        player_state = {
+            "tracks": [],
+            "prev_tracks": [],
+            "options": {
+                "repeat_enabled": False,
+                "shuffle_enabled": False
+            },
+            "state": {
+                "is_playing": False
+            }
+        }
+
+        items = []
+
+        for item in player['items']['edges']:
+            id = id_mapper.ext2int('track', item['node']['id'])
+            artist_id = id_mapper.ext2int('artist', item['node']['track']['artist']['id'])
+            items.append({'id': id,
+                          'track_type': 'audio',
+                          'content_type': 'music',
+                          'title': item['node']['track']['title'],
+                          'images': [{'url': item['node']['track']['image']['url'],'size': 'thumbnail'}],
+                          'authors': [{'id': artist_id, 'title': item['node']['track']['artist']['title']}],
+                          'duration_ms': item['node']['track']['duration'] * 1000,
+                          'progress_ms': 0,
+                          'source_id' : None,
+                          'context_title' : None,
+                          'release_date': item['node']['track']['release']['date'],
+                          'files' : [{'bitrate':128000,'codec':'codec','file_id':id}]
+                          })
+
+        player_state['tracks'] = items
+
+        return player_state
 
     def playlist_conversion(self, playlist):
         playlist['id'] = id_mapper.ext2int('playlist', playlist['id'])
@@ -466,3 +555,9 @@ class Amuze():
             res = {'ext_type':ext_type, 'ext_id':ext_id}
 
         return res
+
+    def player(self):
+        params = {"query": QUERY_PLAYLIST_WITH_STREAM_URL, "variables": {'id': 56044}}
+        r = requests.post(AMUZE_GRAPHQL_API_URL, json=params, headers=self.headers)
+        player_state = self.player_conversion(r.json()['data']['music']['playlists'][0])
+        return player_state
