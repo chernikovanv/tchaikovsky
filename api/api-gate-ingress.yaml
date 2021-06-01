@@ -2,8 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: api-gate-ingress
-  annotations:
-    # If the class annotation is not specified it defaults to "gce".
+  annotations:    
+    kubernetes.io/ingress.global-static-ip-name: 34.107.169.78
+    networking.gke.io/managed-certificates: api-gate-certificate
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
