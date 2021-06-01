@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: api-gate-ingress
   annotations:    
-    kubernetes.io/ingress.global-static-ip-name: 34.107.169.78
+    kubernetes.io/ingress.global-static-ip-name: api-gate
     networking.gke.io/managed-certificates: api-gate-certificate
     kubernetes.io/ingress.class: "gce"
 spec:
