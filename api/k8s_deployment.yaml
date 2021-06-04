@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: api
+  template:
+    metadata:
+      labels:
+        name: api
+    spec:
+      containers:
+      - image: cr.yandex/crpurmch681deghm39te/api:v1.0
+        name: api
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "10.129.0.38"
