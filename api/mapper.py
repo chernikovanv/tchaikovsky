@@ -1,7 +1,8 @@
 import uuid
+import os
 
 class ID_Mapper():
-    def __init__(self, storage_type='memory', db_cluster = None):
+    def __init__(self, storage_type='memory'):
         
         self.storage_type = storage_type
         
@@ -11,7 +12,8 @@ class ID_Mapper():
         
         if self.storage_type == 'db':
             from cassandra.cluster import Cluster
-            self.cluster = Cluster(db_cluster)
+            DB_HOST = os.getenv('DB_HOST')
+            self.cluster = Cluster([DB_HOST])
             self.session = self.cluster.connect()
             CQL = '''CREATE KEYSPACE IF NOT EXISTS id_mapping
                      WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};'''
