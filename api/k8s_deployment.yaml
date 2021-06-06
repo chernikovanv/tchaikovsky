@@ -15,7 +15,7 @@ spec:
         name: api
     spec:
       containers:
-      - image: cr.yandex/crpurmch681deghm39te/api:v1.0
+      - image: cr.yandex/crpurmch681deghm39te/api:v2.0
         name: api
         ports:
         - containerPort: 5000
