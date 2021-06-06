@@ -1,6 +1,9 @@
 import uuid
 import os
 
+import logging
+logger = logging.getLogger(__name__)
+
 class ID_Mapper():
     def __init__(self, storage_type='memory'):
         
