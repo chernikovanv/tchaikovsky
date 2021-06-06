@@ -22,3 +22,5 @@ spec:
         env:
         - name: DB_HOST
           value: "10.129.0.38"
+        - name: STORAGE_TYPE
+          value: "db"
