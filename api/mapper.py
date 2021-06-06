@@ -9,6 +9,7 @@ class ID_Mapper():
         if self.storage_type == 'memory':
             self.map_ext2int = {}
             self.map_int2ext = {}
+            logger.error('mapper started with memory storage type')
         
         if self.storage_type == 'db':
             from cassandra.cluster import Cluster
@@ -37,6 +38,8 @@ class ID_Mapper():
                     )
                     '''
             self.session.execute(CQL)
+            
+            logger.error('mapper started with db (host={}) storage type'.format(DB_HOST))
 
     def ext2int(self, ext_type, ext_id):
         
