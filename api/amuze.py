@@ -4,15 +4,13 @@ import time
 from datetime import datetime 
 import asyncio
 import aiohttp
-import os
 
 import logging
 logger = logging.getLogger(__name__)
 
 from mapper import ID_Mapper
 
-STORAGE_TYPE = os.getenv('STORAGE_TYPE')
-id_mapper = ID_Mapper(storage_type=STORAGE_TYPE)
+id_mapper = ID_Mapper()
 
 TOKEN = '89012be6a4b5099e3384360459355ac7'
 

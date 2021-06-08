@@ -4,11 +4,15 @@ import os
 import logging
 logger = logging.getLogger(__name__)
 
+STORAGE_TYPE = os.getenv('STORAGE_TYPE')
+
 class ID_Mapper():
-    def __init__(self, storage_type='memory'):
+    def __init__(self):
         
-        self.storage_type = storage_type
-        
+        self.storage_type = STORAGE_TYPE
+
+        assert self.storage_type in ['memory','db']
+
         if self.storage_type == 'memory':
             self.map_ext2int = {}
             self.map_int2ext = {}
@@ -47,12 +51,25 @@ class ID_Mapper():
     def ext2int(self, ext_type, ext_id):
         
         if self.storage_type == 'db':
+
             CQL = "SELECT int_id FROM ext2int where ext_source='{}' and ext_type='{}' and ext_id='{}'"
             CQL = CQL.format('amuze',str(ext_type),str(ext_id))
             rows = self.session.execute(CQL)
+
             for row in rows:
                 return str(row.int_id)
-            return None    
+
+            CQL_1 = '''INSERT INTO ext2int (ext_source, ext_type, ext_id, int_id) VALUES ('{}','{}','{}',{})'''
+            CQL_2 = '''INSERT INTO int2ext (ext_source, ext_type, ext_id, int_id) VALUES ('{}','{}','{}',{})'''
+
+            int_key = str(uuid.uuid1())
+
+            CQL = CQL_1.format('amuze',str(ext_type),str(ext_id),int_key)
+            self.session.execute(CQL)
+            CQL = CQL_2.format('amuze',str(ext_type),str(ext_id),int_key)
+            self.session.execute(CQL)
+
+            return int_key
             
         if self.storage_type == 'memory':
             if ext_type not in self.map_ext2int.keys(): self.map_ext2int[ext_type] = {}

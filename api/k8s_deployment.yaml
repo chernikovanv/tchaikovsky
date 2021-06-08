@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    name: api
+    app: api
   name: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: api
+      app: api
   template:
     metadata:
       labels:
-        name: api
+        app: api
     spec:
       containers:
-      - image: cr.yandex/crpurmch681deghm39te/api:v2.0
+      - image: cr.yandex/crpurmch681deghm39te/api:v2.3
         name: api
         ports:
         - containerPort: 5000
