@@ -441,7 +441,7 @@ class Amuze():
                 
             if 'artists' in item_keys: 
                 block_items_key = 'artists'
-                block_items_kind = 'artist'
+                block_items_kind = 'author'
                 for block_item in item[block_items_key]['edges']:
                     id = id_mapper.ext2int(block_items_kind, block_item['node']['id'])
                     item['items'].append({'id': id,
@@ -455,7 +455,7 @@ class Amuze():
                 
             if 'releases' in item_keys: 
                 block_items_key = 'releases'
-                block_items_kind = 'release'    
+                block_items_kind = 'album'
                 for block_item in item[block_items_key]['edges']:
                     id = id_mapper.ext2int(block_items_kind, block_item['node']['id'])
                     item['items'].append({'id': id,

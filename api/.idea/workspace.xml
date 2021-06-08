@@ -20,10 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d63eca2f-0ec3-40e8-9321-35612827172e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/amuze.py" beforeDir="false" afterPath="$PROJECT_DIR$/amuze.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s_deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/k8s_deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/mapper.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
