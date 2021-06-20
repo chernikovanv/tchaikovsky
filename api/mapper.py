@@ -48,12 +48,12 @@ class ID_Mapper():
             
             logger.error('mapper started with db (host={}) storage type'.format(DB_HOST))
 
-    def ext2int(self, ext_type, ext_id):
+    def ext2int(self, ext_type, ext_id, ext_platform='amuze'):
         
         if self.storage_type == 'db':
 
             CQL = "SELECT int_id FROM ext2int where ext_source='{}' and ext_type='{}' and ext_id='{}'"
-            CQL = CQL.format('amuze',str(ext_type),str(ext_id))
+            CQL = CQL.format(ext_platform,str(ext_type),str(ext_id))
             rows = self.session.execute(CQL)
 
             for row in rows:
@@ -64,9 +64,9 @@ class ID_Mapper():
 
             int_key = str(uuid.uuid1())
 
-            CQL = CQL_1.format('amuze',str(ext_type),str(ext_id),int_key)
+            CQL = CQL_1.format(ext_platform,str(ext_type),str(ext_id),int_key)
             self.session.execute(CQL)
-            CQL = CQL_2.format('amuze',str(ext_type),str(ext_id),int_key)
+            CQL = CQL_2.format(ext_platform,str(ext_type),str(ext_id),int_key)
             self.session.execute(CQL)
 
             return int_key

@@ -12,6 +12,8 @@ from mapper import ID_Mapper
 
 id_mapper = ID_Mapper()
 
+EXT_PLATFORM = 'amuze'
+
 TOKEN = '89012be6a4b5099e3384360459355ac7'
 
 AMUZE_GRAPHQL_API_URL = 'https://cdn.music.beeline.ru/api/v3/graphql'

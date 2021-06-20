@@ -3,6 +3,10 @@ from flask import Flask, url_for, request
 from datetime import datetime
 
 from amuze import Amuze
+from biblio import Biblio
+
+import logging
+logger = logging.getLogger(__name__)
 
 # fix to avoid this error - https://github.com/jarus/flask-testing/issues/143 
 import werkzeug
@@ -30,6 +34,7 @@ app = Flask(__name__)
 api = Custom_API(app)
 
 amz = Amuze()
+bibl = Biblio()
 
 ns = api.namespace('Сервис контента', path='/')
 
@@ -40,7 +45,7 @@ args.add_argument(
     type=str,
     required=False,
     default=None,
-    choices=['main'],
+    choices=['main','books'],
     help='category'
 )
 @ns.route('/feed/v1')
@@ -49,64 +54,26 @@ class feed(Resource):
 
     def get(self):
 
-        req_args = args.parse_args(request)
-        id = req_args.get('id', None)
+        id = request.args.get('id',None)
+        category = request.args.get('category', None)
+
+        logger.error('category = ' + str(category))
+        logger.error('id = ' + str(id))
 
         if id is not None:
             res = amz.feed_by_id(id)
         else:
-            res = amz.feed()
-
-        res['blocks'].append({
-      "id": "83e4f670-6967-4c2a-a2c3-fcbe737250cb",
-      "kind": "card_wide",
-      "title": {
-        "text": "Аудиокниги",
-        "size": "large",
-        "highlight": None,
-        "action": None
-      },
-      "description": None,
-      "images": [
-        {
-          "url": "https://content.chk.dev.kode-t.ru/images/blur%2Bfill.jpg",
-          "size": "thumbnail"
-        }
-      ],
-      "items": [
-        {
-          "id": "67459746-c1ff-4c5e-91b3-f677b6864c21",
-          "kind": "book",
-          "title": "Тонкое искусство пофигизма",
-          "description": "Современное общество пропагандирует культ успеха: будь умнее, богаче, продуктивнее – будь лучше всех. Соцсети изобилуют историями на тему, как какой-то малец придумал приложение и заработал кучу денег, статьями в духе «Тысяча и один способ быть счастливым», а фото во френдленте создают впечатление, что окружающие живут лучше и интереснее, чем мы. Однако наша зацикленность на позитиве и успехе лишь напоминает о том, чего мы не достигли, о мечтах, которые не сбылись. Как же стать по-настоящему счастливым? Популярный блогер Марк Мэнсон в книге «Тонкое искусство пофигизма» предлагает свой, оригинальный подход к этому вопросу. Его жизненная философия проста – необходимо научиться искусству пофигизма. Определив то, до чего вам действительно есть дело, нужно уметь наплевать на все второстепенное, забить на трудности, послать к черту чужое мнение и быть готовым взглянуть в лицо неудачам и показать им средний палец.",
-          "images": [
-            {
-              "url": "https://content.chk.dev.kode-t.ru/Books/Book-003/1/f8bdf5aa-b631-48e4-981e-0a6eb580f899.png",
-              "size": "thumbnail"
-            }
-          ],
-          "context": {
-            "release_date": "2016-01-01",
-            "authors": [
-              {
-                "id": "0d47c7f8-b50e-4e87-af3a-8eba014cd84f",
-                "title": "Марк Мэнсон"
-              }
-            ],
-            "duration_ms": 19013000,
-            "description": None,
-            "color": None,
-            "icon_url": None,
-            "id": None,
-            "link": None,
-            "track_count": 39,
-            "popular": None,
-            "stream_url": None,
-            "play_now": False
-          }
-        }
-      ]
-    })
+            if category == 'main':
+                res = amz.feed()
+                res['blocks'] += bibl.feed()['blocks']
+            elif category == 'books':
+                res = bibl.feed()
+                res['blocks'][0]['kind'] = 'list'
+                res['blocks'][0]['images'] = []
+                res['blocks'][0]['title']['size'] = 'standard'
+            else:
+                res = amz.feed()
+                res['blocks'].append(bibl.feed()['blocks'])
 
         return res
 
